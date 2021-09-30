@@ -38,12 +38,12 @@ const encrypt= (p,key) =>{
   const no_cols = idx_map.length // calculate number of columns based on the key length
   const no_rows = Math.ceil(plain_arr.length / no_cols) // calculate number of rows
 
-  const rem =  plain_arr.length  % no_cols  // calculate number letters in the last row (partial row) if any
+  const rem =  plain_arr.length  % no_cols  // calculate number of letters in the last row (partial row) if any
   const has_rem = rem != 0 // whether there is a partail row or not
   
   CIPHER = ""
     
-    // iterate through columns 
+  // iterate through columns 
   for(let col=0; col<no_cols;col++){
       for(let row = 0 ; row<no_rows;row++){
       
@@ -61,20 +61,20 @@ const decrypt= (c,key) =>{
 
   idx_map = map_indexes(key) // get key index mapping in alphabetical order
   c = c.replace(/ /g, ""); // remove spaces
-  
+
   cipher_arr = c.toUpperCase().split('') // convert string to array
   
   const no_cols = idx_map.length // calculate number of columns based on the key length
   const no_rows = Math.ceil(cipher_arr.length / no_cols)  // calculate number of rows
 
-  const rem =  cipher_arr.length  % no_cols // calculate number letters in the last row (partial row) if any
+  const rem =  cipher_arr.length  % no_cols // calculate number of letters in the last row (partial row) if any
   const has_rem = rem != 0 // whether there is a partail row or not
 
-  PLAIN_ARR = [] // in array that will be filled with the cipher letters
+  PLAIN_ARR = [] // an array that will be filled with the cipher letters
 
   let current_letter= 0 // keep track of the current cipher letter
 
-     // iterate through columns 
+    // iterate through columns 
     for(let col=0; col<no_cols;col++){
        for(let row = 0 ; row<no_rows;row++){
       
