@@ -2,14 +2,13 @@
 const map_indexes = (key)=>{
   arr_key = key.toUpperCase().split('') // remove spcaes 
 
-
   // store key letters in an object with their current indices, so that we can access them later and not lose them
   arr_key = arr_key.map((el,index)=>{
   return {
   value:el,
   orignal_index:index}
   })
-  
+
   // Sorting KEYWORD letters alphabetically
   for (i = 1; i < arr_key.length; i++)
       { 
@@ -23,6 +22,7 @@ const map_indexes = (key)=>{
           arr_key[j + 1] = current; 
       } 
   
+      console.log(arr_key)
   return arr_key
   }
   
@@ -42,14 +42,13 @@ const encrypt= (p,key) =>{
   const has_rem = rem != 0 // whether there is a partail row or not
   
   CIPHER = ""
-    
   // iterate through columns 
   for(let col=0; col<no_cols;col++){
       for(let row = 0 ; row<no_rows;row++){
       
       if(row+1==no_rows && has_rem  && idx_map[col].orignal_index>=rem)  // whether to skip the last row (partial row) if exist 
         break;
-      
+        
         CIPHER += plain_arr[row*no_cols+idx_map[col].orignal_index] // concatenate letters based on their order specifed by the key
     }
   }
