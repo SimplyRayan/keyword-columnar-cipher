@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-
+  <title>Keyowrd Columnar Cipher</title>
 
 
 </head>
 <body>
   <h1>Keyowrd Columnar Cipher</h1>
-  <div id="app">
+  <div v-cloak id="app">
     <section class="controls-section">
       <div class="type-controls">
         <input type="radio" id="encrypt" value="encrypt" name="method" v-model="method" v>
@@ -25,11 +24,11 @@
 
       </div>
       <!--  -->
-      <div class="control-item">
+      <div class="control-input">
         <label for="text">Text</label>
         <input type="text" id="text" v-model="text" >
       </div>
-      <div class="control-item">
+      <div class="control-input">
         <label for="keyword">Keyword</label>
         <input type="text" id="keyword" v-model="keyword" >
       </div>
@@ -39,17 +38,18 @@
         <button @click="decryptText">DECRYPT</button>
       </div> -->
       <!--  -->
+
     </section>
     <section class="result-section">
       <h3>Result</h3>
       <p id="result">{{result}}</p>
-      <button @click="explain">Show Steps</button>
+      <button @click="visualize">{{ showSteps ? 'Hide Steps'  : 'Show Steps' }}</button>
       <!--  -->
       <div v-if="showSteps"  class="explain-wrapper">
         <div class="matrix-info">
           <p># of rows : {{matrix_info.no_rows}}</p>
           <p># of columns : {{matrix_info.no_cols}}</p>
-          <p># lettrs in the partial row (if exist) : {{matrix_info.rem}}</p>
+          <p># of letters in the partial row (if exist) : {{matrix_info.rem}}</p>
         </div>
         <div class="matrix-wrapper">
           <!-- MATRIX HEADER -->
@@ -62,8 +62,8 @@
             </div>
           </div>
         <!--  -->
-          <div class="row" v-for="cols in array">
-            <div class="matrix-item" :class="{highlight:item.highlight}" v-for="item in cols">{{item.value}}</div>
+          <div class="row" v-for="cols in visual_array">
+            <div class="matrix-item" :class="{highlight:letter.highlight}" v-for="letter in cols">{{letter.value}}</div>
         </div>
 
       </div>
@@ -73,9 +73,15 @@
     </section>
 
   </div>
+  
+
+
 </body>
 
 <style>
+  
+[v-cloak] { display: none; }
+
 *{
   padding: 0px;
   margin: 0px;
@@ -95,6 +101,7 @@ h1{
 }
 #app{
   max-width: 100rem;
+  padding: 2rem;
   margin: 0 auto;
   color:#1864ab;
 }
@@ -102,14 +109,17 @@ h1{
 .controls-section{
   display: grid;
   grid-template-columns: 2fr 1fr;
-
-  padding: 5rem;
+  gap:2rem;
+  margin-bottom: 5rem;
+  /* padding: 5rem; */
 }
+
 .type-controls{
-  grid-column: 1 / span 3;
+  grid-column: 1 / span 2;
   display: flex;
   justify-content: center;
   gap: 2.5rem;
+  margin-bottom: 4rem;
 }
 
 input[type="radio"]{
@@ -138,13 +148,13 @@ input[type="radio"]{
 }
 
 
-.control-item{
+.control-input{
   display: flex;
   gap:2rem;
-  padding: 2rem;
+
 }
 
-input {
+#text,#keyword {
   font-family: 'Lato', sans-serif;
   border-radius: 0;
   border: 1px solid rgba(44, 44, 44, 0.333);
@@ -200,10 +210,6 @@ button:hover,button:active{
   background-color: #1c7ed6;
 }
 
-.result-section{
-  padding: 5rem;
-  padding-top: 0rem;
-}
 h3{
   font-size: 3rem;
 }
@@ -211,10 +217,10 @@ h3{
 p{
   font-size: 2rem;
   margin-top: 1rem;
-
 }
 
 #result{
+  width: 70%;
   margin-bottom: 5rem;
 }
 
@@ -255,16 +261,32 @@ p{
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;1,100;1,300;1,400&display=swap');
-  </style>
+</style>
 
-  <!-- Vue.js -->
-  <script src="https://unpkg.com/vue@3.2.19"></script>
 
-  <!--  -->
-  <script src="../keyword_columnar.js"></script>
-  <script src="./explain.js"></script>
-  <script src="./app.js"></script>
-    
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3.2.1"></script>
+
+    <!--  -->
+    <script src="../keyword_columnar.js"></script>
+    <script src="./visualization.js"></script>
+    <script src="./app.js"></script>
+
 </html>
 
+
+
+<style>
+
+@media screen and (max-width: 600px){
+  
+  html{
+   font-size: 50%;
+  }
+
+  .control-input{
+    grid-column: 1 / span 3;
+  }
+}
+</style>
 

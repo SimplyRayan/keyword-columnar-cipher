@@ -1,12 +1,13 @@
 // map current indices to their true index
 const map_indexes = (key)=>{
-  arr_key = key.toUpperCase().split('') // remove spcaes 
+  arr_key = key.toUpperCase().split('') // convert key string to array
 
   // store key letters in an object with their current indices, so that we can access them later and not lose them
   arr_key = arr_key.map((el,index)=>{
   return {
-  value:el,
+  letter:el,
   orignal_index:index}
+
   })
 
   // Sorting KEYWORD letters alphabetically
@@ -14,84 +15,95 @@ const map_indexes = (key)=>{
       { 
           current = arr_key[i]; 
           j = i - 1; 
-          while (j >= 0 && arr_key[j].value > current.value)
+          while (j >= 0 && arr_key[j].letter > current.letter)
           { 
               arr_key[j + 1] = arr_key[j]; 
               j = j - 1; 
           } 
           arr_key[j + 1] = current; 
-      } 
-  
-      console.log(arr_key)
+      }   
   return arr_key
   }
-  
-  
 
+// ##################################################################################### //\
+
+// this method calculates info such as # of rows and columns also # of letters in the partial row if exist 
+const calcMatrixInfo = (text,key)=>{
+
+  text = text.replace(/ /g, "") // remove spaces  
+
+  const no_cols = key.length // calculate number of columns based on the key length
+  const no_rows = Math.ceil(text.length / no_cols) // calculate number of rows
+
+  const rem =  text.length  % no_cols  // calculate number of letters in the last row (partial row) if any
+  const has_rem = rem != 0 // whether there is a partail row or not
+
+  const idx_map = map_indexes(key) // key index mapping in alphabetical order
+
+  const text_array = text.toUpperCase().split('') // convert string to array
+
+  return { no_cols, no_rows, rem, has_rem, text_array, idx_map }
+}
+
+// ##################################################################################### //
+
+
+const validaitKey =  key =>{
+  if( !key.match(/^[A-Za-z]+$/) ) // key must consist of only letters
+    return false;
+  else 
+    return true
+}
+
+// ##################################################################################### //
 const encrypt= (p,key) =>{
 
-  idx_map = map_indexes(key) // get key index mapping in alphabetical order
-  p = p.replace(/ /g, ""); // remove spaces
-  
-  plain_arr = p.toUpperCase().split('') // convert string to array
-  
-  const no_cols = idx_map.length // calculate number of columns based on the key length
-  const no_rows = Math.ceil(plain_arr.length / no_cols) // calculate number of rows
+  if( !validaitKey(key) )
+    throw new Error('Key must contain only letters')
 
-  const rem =  plain_arr.length  % no_cols  // calculate number of letters in the last row (partial row) if any
-  const has_rem = rem != 0 // whether there is a partail row or not
+  const { no_cols, no_rows, rem, has_rem, idx_map ,text_array } = calcMatrixInfo(p,key)
   
-  CIPHER = ""
+  const plain_arr = text_array;
+  let cipher = ""
+
   // iterate through columns 
   for(let col=0; col<no_cols;col++){
       for(let row = 0 ; row<no_rows;row++){
       
-      if(row+1==no_rows && has_rem  && idx_map[col].orignal_index>=rem)  // whether to skip the last row (partial row) if exist 
+      if( row+1==no_rows && has_rem  && idx_map[col].orignal_index>=rem )  // whether to skip the last row (partial row) if exist 
         break;
         
-        CIPHER += plain_arr[row*no_cols+idx_map[col].orignal_index] // concatenate letters based on their order specifed by the key
+        cipher += plain_arr[row*no_cols+idx_map[col].orignal_index] // concatenate letters based on their order specifed by the key
     }
   }
-  return CIPHER
+  return cipher
 }
   
+// ##################################################################################### //
 
 const decrypt= (c,key) =>{
 
-  idx_map = map_indexes(key) // get key index mapping in alphabetical order
-  c = c.replace(/ /g, ""); // remove spaces
-
-  cipher_arr = c.toUpperCase().split('') // convert string to array
+  if( !validaitKey(key) )
+    throw new Error('Key must contain only letters')
   
-  const no_cols = idx_map.length // calculate number of columns based on the key length
-  const no_rows = Math.ceil(cipher_arr.length / no_cols)  // calculate number of rows
+  const { no_cols, no_rows, rem, has_rem, idx_map, text_array} = calcMatrixInfo(c,key)
 
-  const rem =  cipher_arr.length  % no_cols // calculate number of letters in the last row (partial row) if any
-  const has_rem = rem != 0 // whether there is a partail row or not
+  const cipher_arr = text_array
 
-  PLAIN_ARR = [] // an array that will be filled with the cipher letters
-
+  const plain_arr = [] // an array that will be filled with the plain text letters
   let current_letter= 0 // keep track of the current cipher letter
 
     // iterate through columns 
     for(let col=0; col<no_cols;col++){
        for(let row = 0 ; row<no_rows;row++){
       
-        if(has_rem && row+1==no_rows && idx_map[col].orignal_index>=rem) // whether to skip the last row (partial row) if exist 
+        if( row+1==no_rows && has_rem && idx_map[col].orignal_index>=rem) // whether to skip the last row (partial row) if exist 
           break;
 
-        PLAIN_ARR[row*no_cols+idx_map[col].orignal_index] = cipher_arr[current_letter++] // fill the matrix with letters in the order specified by the key
+          plain_arr[row*no_cols+idx_map[col].orignal_index] = cipher_arr[current_letter++] // fill the matrix with letters in the order specified by the key
       }
     }
 
-    return PLAIN_ARR.join('') // convert the matrix back to string after the letters were added to their correct coordinates
-  }
-  
+    return plain_arr.join('') // convert the matrix back to string after the letters were added to their correct coordinates
 
-  result = encrypt('THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG','CORNELL')
-  
-  console.log(result=='TKODEGUWMRYINPTDCFEHOQOUEZHBXOLERJVA')
-  
-  result = decrypt('TKODEGUWMRYINPTDCFEHOQOUEZHBXOLERJVA','CORNELL')
-  
-  console.log(result=='THEQUICKBROWNFOXJUMPEDOVERTHELAZYDOG')  
+  }
